@@ -1,0 +1,16 @@
+.home {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    overflow-y: auto;
+}
+
+
+.home-main {
+    width: 500px;
+    height: 1500px;
+    overflow-y: auto;
+    background-color: red;
+}
