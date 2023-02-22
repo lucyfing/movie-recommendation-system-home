@@ -1,0 +1,70 @@
+.app-layout {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    overflow: auto;
+
+    .app-container {
+        position: relative;
+        max-width: 2080px;
+        min-width: 980px;
+        margin: auto;
+        display: flex;
+        flex-direction: column;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        align-items: center;
+
+        .app-container-header {
+            width: 100%;
+            height: 4rem;
+            overflow-y: hidden;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            flex-wrap: nowrap;
+            box-sizing: border-box;
+            padding: 0 3rem;
+            box-shadow: 0px 5px 5px #DBDCDD;
+        
+            .header-title {
+                width: 12rem;
+                .title:hover {
+                    cursor: pointer;
+                }
+            }
+
+            .header-navigate {
+                width: 50%;
+                display: flex;
+                justify-content: flex-start;
+                &-menu {
+                    height: 4.2rem;
+                    line-height: 4.2rem;
+                }
+            }
+
+            .header-search {
+                width: 30%;
+                display: flex;
+                justify-content: center;
+        
+                .search-btn {
+                    width: 85%;
+                }
+            }
+
+            .header-user {
+                width: 5rem;
+                display: flex;
+                justify-content: flex-end;
+        
+                &-avatar:hover {
+                    cursor: pointer;
+                }
+            }
+        }
+    }
+}
