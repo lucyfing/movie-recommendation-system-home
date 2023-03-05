@@ -15,17 +15,25 @@ export default function DefaultLayout(
     // 导航栏
     const menuItems: MenuProps['items'] = [
         {
-        label: '首页',
-        key: '/',
+        label: '喜剧',
+        key: '/channel/comedy',
         },
         {
-        label: '电影推荐',
-        key: '/movie-recommendation',
+        label: '恐怖',
+        key: '/channel/terror',
         },
         {
-        label: '新闻资讯',
-        key: '/news-information',
+        label: '爱情',
+        key: '/channel/love',
         },
+        {
+        label: '战争',
+        key: '/channel/war',
+        },
+        {
+        label: '悬疑',
+        key: '/channel/suspense',
+        }
     ];
     const [current, setCurrent] = useState('/');
     const navigate = useNavigate();
@@ -75,12 +83,12 @@ export default function DefaultLayout(
                     </div>
                 </div>
             </Affix>
+            <div className='app-container-main'>
+                {props.element}
+            </div>
             <Modal width={450} footer={null} open={isModalOpen} onCancel={()=>setIsModalOpen(false)}>
                 <Tabs defaultActiveKey="login" items={tagItems} centered destroyInactiveTabPane/>
             </Modal>
-        </div>
-        <div className='app-container-main'>
-            {props.element}
         </div>
     </div>
     )

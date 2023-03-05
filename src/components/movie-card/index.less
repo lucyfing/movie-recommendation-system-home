@@ -1,0 +1,38 @@
+.home-movie-card {
+    width: 18%;
+    min-width: 11rem;
+    height: 15rem;
+    margin-right: 2%;
+    margin-bottom: 2rem;
+
+    &-meta {
+        height: 6rem;
+        .ant-card-meta-title {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            word-spacing: normal;
+        }
+        .ant-card-meta-description {
+            word-break: break-all;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 3;  
+        }
+    }
+
+    .home-movie-card-rate {
+        position: absolute;
+        top: 0.5rem;
+        left: 0.5rem;
+        font-weight: bolder;
+        color: #1A73E8;
+    }
+}
+
+.home-movie-card:hover {
+    cursor: pointer;
+    transform: scale(1.1);
+    box-shadow: 5px 5px 8px #E8EAED;
+}
