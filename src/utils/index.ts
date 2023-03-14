@@ -15,10 +15,20 @@ const localStorage_clear = () => {
     localStorage.clear()
 }
 
+// 防抖
+const debounce = (fn: any, wait: number) => {
+    let timeout: any = null
+    return function(){
+        clearTimeout(timeout)
+        timeout = setTimeout(fn, wait)
+    }
+}
+
 
 export default {
     localStorage_get,
     localStorage_set,
     localStorage_remove,
-    localStorage_clear
+    localStorage_clear,
+    debounce
 }

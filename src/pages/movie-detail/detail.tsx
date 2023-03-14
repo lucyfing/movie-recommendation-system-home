@@ -1,7 +1,11 @@
 import { Button, Tabs, TabsProps } from 'antd'
-import React, { lazy, useState } from 'react'
+import { HeartOutlined } from '@ant-design/icons'
+import React, { lazy, useCallback, useEffect, useState } from 'react'
 import {useNavigate} from 'react-router-dom'
 import './index.less'
+import utils from '../../utils'
+import { copyFileSync } from 'fs'
+import useDebounce from '../../useHooks/useDebounce'
 
 const MovieCard = lazy(()=>import('../../components/movie-card'))
 
@@ -89,21 +93,21 @@ export default function detail() {
 
   const movies: Array<Object> = [
     {
-      poster:'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
+      poster:'https://img2.doubanio.com/view/photo/s_ratio_poster/public/p1675053073.webp',
       name: '电影名称',
       description: 'descriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescription',
       rate: 4.5,
       doubanId: 123456 
     },
     {
-      poster:'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
+      poster:'https://img2.doubanio.com/view/photo/s_ratio_poster/public/p1675053073.webp',
       name: '电影名称',
       description: 'descriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescription',
       rate: 4.5,
       doubanId: 182062  
     },
     {
-      poster:'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
+      poster:'https://img2.doubanio.com/view/photo/s_ratio_poster/public/p1675053073.webp',
       name: '电影名称',
       description: 'descriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescription',
       rate: 4.5,
@@ -125,17 +129,50 @@ export default function detail() {
     }
   ]
 
+  const [chooseColletion, setChooseColletion] = useState(false)
+  useEffect(()=>{
+    let timer: any = null
+    timer = setTimeout(() => {
+      console.log('发送收藏数据')
+    }, 1000)
+    return () => {
+      clearTimeout(timer)
+    }
+  }, [chooseColletion])
   return (
     <div className='detail-movie'>
       <div className='detail-movie-video'>
         <div className='video-box'>
-          <video className='video' controls={true} preload="auto">
-            <source src="https://vt1.doubanio.com/202303042343/6eea3366fcd90bc85ffeea5bbca87e7c/view/movie/M/402590258.mp4" type="video/mp4" />
+          <video
+            className='video'
+            controls={true}
+            preload="auto"
+            // src='https://vt1.doubanio.com/202303141529/ae6b0d62f4120dba16151bd88aa938fb/view/movie/M/402590258.mp4'
+          >
+            <source src="https://vt1.doubanio.com/202303132118/dec3fcd65e2be8dbff2af6042d2ae4e7/view/movie/M/402590258.mp4" type="video/mp4" />
           </video>
+          <div className='video-choose'>
+            <Button
+              type='link'
+              icon={<HeartOutlined />}
+              className={chooseColletion?'is-choose': 'not-choose'}
+              onClick={()=>setChooseColletion(!chooseColletion)}
+            ></Button>
+          </div>
         </div>
         <div className='detail-movie-introduce'>
-          <Button type="text" block className='back-home' onClick={goBack}>回到首页</Button>
-          <Tabs defaultActiveKey="introduce" items={tagItems} centered destroyInactiveTabPane/>
+          <Button
+            type="text"
+            block 
+            className='back-home' 
+            onClick={goBack}
+          >回到首页</Button>
+          <Tabs
+            defaultActiveKey="introduce" 
+            items={tagItems} 
+            centered 
+            destroyInactiveTabPane
+          />
         </div>
       </div>
       <div className='detail-movie-recommend'>

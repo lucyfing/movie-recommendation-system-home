@@ -11,7 +11,9 @@ export default function index(props:{
         poster: string,
         description: string,
         rate: string
-    }
+    },
+    minWidth?: string | number | undefined,
+    height?: string | number | undefined
 }) {
     const navigate = useNavigate()
     const location = useLocation()
@@ -26,6 +28,7 @@ export default function index(props:{
     return (
         <Card
             className='home-movie-card'
+            style={{minWidth: props.minWidth, height: props.height}}
             bodyStyle={{padding:'5px'}}
             cover={
                 <img

@@ -1,51 +1,12 @@
-import React, { lazy, useEffect, useState } from 'react'
-import { useLocation } from 'react-router-dom';
-import request from '../../utils/request'
-import { Card, Menu } from 'antd'
-import type { MenuProps } from 'antd/es/menu';
+import React, { useState } from 'react'
 import './index.less'
-const MovieCard = lazy(() => import('../../components/movie-card'))
+import '../../assets/index.less'
+import MovieCard from '../../components/movie-card'
+import { Pagination } from 'antd'
+import type { PaginationProps } from 'antd'
 
-export default function Home() {  
-  const items: MenuProps['items'] = [
-    {
-      label: '2020 年上映',
-      key: '2020'
-    },
-    {
-      label: '2021',
-      key: '2021'
-    },
-    {
-      label: '2022',
-      key: '2022'
-    },
-    {
-      label: '2023',
-      key: '2023'
-    },
-    {
-      label: '2019',
-      key: '2019'
-    },
-    {
-      label: '2018',
-      key: '2018'
-    },
-    {
-      label: '2017',
-      key: '2017'
-    },
-    {
-      label: '2016',
-      key: '2016'
-    },
-    {
-      label: '2015',
-      key: '2015'
-    }
-  ]
-  const movies: Array<Object> = [
+export default function index() {
+  const collectionMovies: Array<Object> = [
     {
       poster:'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
       name: '电影名称',
@@ -82,21 +43,19 @@ export default function Home() {
       doubanId: 987456 
     }
   ]
-
+  const [current, setCurrent] = useState(1)
+  const onChange: PaginationProps['onChange'] = (page) => {
+    setCurrent(page)
+  };
   return (
-    <div className='home'>
-      <div className='home-year-list'>
-        <Menu
-          mode='inline'
-          theme='light'
-          items={items}
-          className='menu-year'
-        />
-      </div>
-      <div className='home-movie-list'>
-        {movies.map((movie:any)=>(
-          <MovieCard movie={movie} key={movie.doubanId}/>
+    <div className='personal-collection app-div-shadow'>
+      <div className='collection-list'>
+        {collectionMovies.map((movie:any)=>(
+          <MovieCard movie={movie} key={movie.doubanId} minWidth='7rem' height='13rem'/>
         ))}
+      </div>
+      <div className='collection-pagination'>
+        <Pagination defaultPageSize={10} current={current} onChange={onChange} total={100} showSizeChanger={false}/>
       </div>
     </div>
   )
