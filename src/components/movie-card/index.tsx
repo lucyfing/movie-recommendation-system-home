@@ -1,29 +1,29 @@
 import { Card } from 'antd'
 import React from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { Movie } from '../../lib/app-type'
 import './index.less'
 const { Meta } = Card
 
 export default function index(props:{
-    movie: {
-        doubanId: string,
-        name: string,
-        poster: string,
-        description: string,
-        rate: string
-    },
+    movie: Movie,
     minWidth?: string | number | undefined,
     height?: string | number | undefined
 }) {
     const navigate = useNavigate()
     const location = useLocation()
-    const onClickCard = (id: string) => {
+    const onClickCard = (movie: Movie) => {
         if(location.pathname.includes('/channel')) {
             const types = location.pathname.split('/')
             const type = types[types.length-1]
             localStorage.setItem('type', type)
         }
-        navigate(`/detail/${id}`)
+        console.log(movie)
+        navigate(`/detail/${movie.doubanId}`, {
+            state: {
+                movieDetail: JSON.stringify(movie)
+            }
+        })
       }
     return (
         <Card
@@ -37,7 +37,7 @@ export default function index(props:{
                 style={{height:'8rem'}}
                 />
             }
-            onClick={() => onClickCard(props.movie.doubanId)}
+            onClick={() => onClickCard(props.movie)}
         >
             <Meta
                 title={props.movie.name}

@@ -5,12 +5,15 @@ import { Card, Menu } from 'antd'
 import type { MenuProps } from 'antd/es/menu';
 import './index.less'
 import axios from 'axios';
+import { getRequest } from '../../request/axios';
+import movieApi from '../../request/movie'
+import { Movie } from '../../lib/app-type';
 const MovieCard = lazy(() => import('../../components/movie-card'))
 
 export default function Home() {  
   const items: MenuProps['items'] = [
     {
-      label: '2020 年上映',
+      label: '2020',
       key: '2020'
     },
     {
@@ -46,55 +49,14 @@ export default function Home() {
       key: '2015'
     }
   ]
-  // const movies: Array<Object> = [
-  //   {
-  //     poster:'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
-  //     name: '电影名称',
-  //     description: 'descriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescription',
-  //     rate: 4.5,
-  //     doubanId: 123456 
-  //   },
-  //   {
-  //     poster:'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
-  //     name: '电影名称',
-  //     description: 'descriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescription',
-  //     rate: 4.5,
-  //     doubanId: 182062  
-  //   },
-  //   {
-  //     poster:'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
-  //     name: '电影名称',
-  //     description: 'descriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescription',
-  //     rate: 4.5,
-  //     doubanId: 456895  
-  //   },
-  //   {
-  //     poster:'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
-  //     name: '电影名称',
-  //     description: 'descriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescription',
-  //     rate: 4.5,
-  //     doubanId: 856942  
-  //   },
-  //   {
-  //     poster:'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
-  //     name: '电影名称',
-  //     description: 'descriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescription',
-  //     rate: 4.5,
-  //     doubanId: 987456 
-  //   }
-  // ]
 
-  const [movies, setMovies] = useState<Array<Object>>([])
-  useEffect(()=>{
-    axios.get('http://localhost:4455/api/v0/movies/').then(resp=>{
-      setMovies(()=>resp.data.movies.map((movie:any)=>({
-        poster: movie.poster,
-        name: movie.name,
-        description: movie.description,
-        rate: movie.rate,
-        doubanId: movie.doubanId
-      })))
-    })
+  const [movies, setMovies] = useState<Array<Movie>>([])
+  useEffect(() => {
+    const getMovies = async () => {
+      const moviesList = await movieApi.getAllMovies('/movies/')
+      setMovies(moviesList)
+    }
+    getMovies()
   }, [])
 
   return (
@@ -108,7 +70,7 @@ export default function Home() {
         />
       </div>
       <div className='home-movie-list'>
-        {movies.map((movie:any)=>(
+        {movies.map((movie:Movie)=>(
           <MovieCard movie={movie} key={movie.doubanId}/>
         ))}
       </div>
