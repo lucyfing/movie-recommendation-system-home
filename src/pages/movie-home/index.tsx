@@ -1,4 +1,4 @@
-import React, { lazy, useEffect, useState } from 'react'
+import React, { lazy, useContext, useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom';
 import request from '../../utils/request'
 import { Card, Menu } from 'antd'
@@ -9,55 +9,36 @@ import { getRequest } from '../../request/axios';
 import movieApi from '../../request/movie'
 import { Movie } from '../../lib/app-type';
 const MovieCard = lazy(() => import('../../components/movie-card'))
+import { Context } from '../../layouts';
+import { type } from 'os';
 
 export default function Home() {  
-  const items: MenuProps['items'] = [
-    {
-      label: '2020',
-      key: '2020'
-    },
-    {
-      label: '2021',
-      key: '2021'
-    },
-    {
-      label: '2022',
-      key: '2022'
-    },
-    {
-      label: '2023',
-      key: '2023'
-    },
-    {
-      label: '2019',
-      key: '2019'
-    },
-    {
-      label: '2018',
-      key: '2018'
-    },
-    {
-      label: '2017',
-      key: '2017'
-    },
-    {
-      label: '2016',
-      key: '2016'
-    },
-    {
-      label: '2015',
-      key: '2015'
-    }
-  ]
-
-  const [movies, setMovies] = useState<Array<Movie>>([])
+  const type = useContext(Context)
+  const [movies, setMovies] = useState<Movie[]>([])
+  const [currentYear, setCurrentYear] = useState('-1')
+  const getTypeMovies = async (type: string, year: number) => {
+    const movieList = await movieApi.getAllMovies(`/movies/?type=${type==='/'?'':type}&&year=${year===-1?'':year}`)
+    setMovies(movieList)
+  }
   useEffect(() => {
-    const getMovies = async () => {
-      const moviesList = await movieApi.getAllMovies('/movies/')
-      setMovies(moviesList)
+    getTypeMovies(type, -1)
+    console.log(movies.length)
+  }, [type])
+  // 获取时间
+  const getYears = () => {
+    const years: MenuProps['items'] = []
+    for(let i=2023; i>2009; i--) {
+      years.push({label: String(i), key: i})
     }
-    getMovies()
-  }, [])
+    years.push({label: '更早', key: 2009})
+    years.unshift({label: '全部', key: -1})
+    return years
+  }
+
+  const onClickYears: MenuProps['onClick'] = async (e) => {
+    setCurrentYear(e.key)
+    getTypeMovies(type, Number(e.key))
+  }
 
   return (
     <div className='home'>
@@ -65,8 +46,10 @@ export default function Home() {
         <Menu
           mode='inline'
           theme='light'
-          items={items}
-          className='menu-year'
+          items={getYears()}
+          className='menu-year scrollbar-style'
+          onClick={onClickYears}
+          selectedKeys={[currentYear]}
         />
       </div>
       <div className='home-movie-list'>

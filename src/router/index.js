@@ -1,4 +1,5 @@
 import { lazy } from 'react'
+import { Navigate } from 'react-router-dom'
 import lazy_component from '../components/lazyComponent'
 const Home = lazy(() => import('../pages/movie-home'))
 const Detail = lazy(() => import('../pages/movie-detail/detail.tsx'))
@@ -11,7 +12,6 @@ export default [
     {
         path: '/',
         name: '首页',
-        navigator: '/channel/commedy',
         element: lazy_component(<Home/>),
     },
     {
@@ -46,5 +46,9 @@ export default [
                 element: lazy_component(<UserCollection/>)
             }
         ]
+    },
+    {
+        path: '*',
+        element: <Navigate to='/' element={lazy_component(<Home/>)}/>
     }
 ]

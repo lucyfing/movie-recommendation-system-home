@@ -1,44 +1,31 @@
-import React, { lazy, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { createContext, lazy, useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Affix, Avatar, Menu, MenuProps, Modal, Tabs, TabsProps, Input } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import './index.less';
+import '../assets/index.less'
 import categoryApi from '../request/category'
+import movieApi from '../request/movie';
 import lazyComponent from '../components/lazyComponent';
 import category from '../request/category';
-import { Category } from '../lib/app-type';
+import { Category, Movie } from '../lib/app-type';
 const Login = lazy(() => import('../components/login'))
 const Register = lazy(() => import('../components/register'))
 
-const { Search } = Input;
+const { Search } = Input
+export const Context = createContext<string>('')
 
 export default function DefaultLayout(
     props: {element: React.ReactElement<any, string | React.JSXElementConstructor<any>> | null}
 ) {
     // 导航栏
-    // const menuItems: MenuProps['items'] = [
-    //     {
-    //     label: '喜剧',
-    //     key: '/channel/comedy',
-    //     },
-    //     {
-    //     label: '恐怖',
-    //     key: '/channel/terror',
-    //     },
-    //     {
-    //     label: '爱情',
-    //     key: '/channel/love',
-    //     },
-    //     {
-    //     label: '战争',
-    //     key: '/channel/war',
-    //     },
-    //     {
-    //     label: '悬疑',
-    //     key: '/channel/suspense',
-    //     }
-    // ];
     const [menuItems, setMenuItems] = useState<MenuProps['items']>()
+    // 电影列表
+    const [movies, setMovies] = useState<Array<Movie>>([])
+    const getMovies = async (type:string='') => {
+        const moviesList = await movieApi.getAllMovies(`/movies/?type=${type}`)
+        setMovies(moviesList)
+    }
     useEffect(() => {
         const getCategories = async () => {
             const categories = await categoryApi.getAllCategory('/category/')
@@ -48,17 +35,29 @@ export default function DefaultLayout(
             })))
         }
         getCategories()
+        getMovies()
     }, [])
-    const [current, setCurrent] = useState('/');
-    const navigate = useNavigate();
-    const onClickMenuItems: MenuProps['onClick'] = (e) => {
+
+    const [current, setCurrent] = useState('/')
+    const navigate = useNavigate()
+    const onClickMenuItems: MenuProps['onClick'] = async (e) => {
+        getMovies(e.key)
         setCurrent(e.key)
         navigate(`/channel/${e.key}`)
+        // localStorage.setItem('type', JSON.stringify(e.key))
     };
     const onClickTitle = () => {
+        getMovies()
         setCurrent('/')
         navigate('/')
     };
+    // 监听url的channel是否合法
+    const location = useLocation()
+    useEffect(()=>{
+        const categoryList: any = menuItems ? menuItems.map((item)=>item?.key) : []
+        const path = decodeURI(location.pathname)
+        if(!categoryList.includes(path.slice(path.lastIndexOf('/')+1)) && path.includes('channel')) navigate('/')
+    }, [menuItems, location.pathname])
 
     // 登录注册tab选项
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -97,9 +96,11 @@ export default function DefaultLayout(
                     </div>
                 </div>
             </Affix>
-            <div className='app-container-main'>
-                {props.element}
-            </div>
+           <Context.Provider value={current}>
+                <div className='app-container-main'>
+                    {props.element}
+                </div>
+           </Context.Provider>
             <Modal width={450} footer={null} open={isModalOpen} onCancel={()=>setIsModalOpen(false)}>
                 <Tabs defaultActiveKey="login" items={tagItems} centered destroyInactiveTabPane/>
             </Modal>
