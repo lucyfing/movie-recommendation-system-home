@@ -3,7 +3,7 @@ import { HeartOutlined } from '@ant-design/icons'
 import React, { lazy, useCallback, useEffect, useState } from 'react'
 import {useLocation, useNavigate, useSearchParams} from 'react-router-dom'
 import './index.less'
-import { Movie } from '../../lib/app-type'
+import { Movie } from '../../lib/app-interface'
 
 const MovieCard = lazy(()=>import('../../components/movie-card'))
 

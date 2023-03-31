@@ -1,5 +1,5 @@
 import { Avatar, Menu, MenuProps } from 'antd'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Outlet } from 'react-router-dom'
 import './index.less'
@@ -24,13 +24,18 @@ export default function index() {
   const onSelect: MenuProps['onSelect'] = (e) => {
     navigator(e.key)
   }
+  const user = JSON.parse(localStorage.getItem('user')!) || {}
+  const navigate = useNavigate()
+  useEffect(()=>{
+    navigate('/user/user-information')
+  },[])
 
   return (
     <div className='personal-center'>
       <div className='personal-center-nav app-div-shadow'>
-        <div className='avator'>
-          <Avatar src="https://joesch.moe/api/v1/random?key=3" className='avator-img'/>
-          <p className='avator-name'>用户名</p>
+        <div className='avatar'>
+          <Avatar src={user.avatar} className='avatar-img'/>
+          <p className='avatar-name'>{user.username || '未知'}</p>
         </div>
         <Menu
           mode='inline'

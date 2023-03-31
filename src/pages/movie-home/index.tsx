@@ -5,9 +5,9 @@ import { Card, Menu } from 'antd'
 import type { MenuProps } from 'antd/es/menu';
 import './index.less'
 import axios from 'axios';
-import { getRequest } from '../../request/axios';
-import movieApi from '../../request/movie'
-import { Movie } from '../../lib/app-type';
+import { getRequest } from '../../api/axios';
+import movieApi from '../../api/movie'
+import { Movie } from '../../lib/app-interface';
 const MovieCard = lazy(() => import('../../components/movie-card'))
 import { Context } from '../../layouts';
 import { type } from 'os';
@@ -16,13 +16,12 @@ export default function Home() {
   const type = useContext(Context)
   const [movies, setMovies] = useState<Movie[]>([])
   const [currentYear, setCurrentYear] = useState('-1')
-  const getTypeMovies = async (type: string, year: number) => {
-    const movieList = await movieApi.getAllMovies(`/movies/?type=${type==='/'?'':type}&&year=${year===-1?'':year}`)
+  const getTypeMovies = async (type?: string, year?: number) => {
+    const movieList = await movieApi.getAllMovies(type, year)
     setMovies(movieList)
   }
   useEffect(() => {
     getTypeMovies(type, -1)
-    console.log(movies.length)
   }, [type])
   // 获取时间
   const getYears = () => {

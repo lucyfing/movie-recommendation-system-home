@@ -2,7 +2,7 @@ import axios from 'axios'
 import { message } from 'antd'
 
 const Axios = axios.create({
-    baseURL: 'http://localhost:4455',
+    // baseURL: 'http://localhost:4455',
     timeout: 2000
 })
 
@@ -50,11 +50,12 @@ Axios.interceptors.response.use(success => {
 
 
 // 传送json格式的post请求
-export const postRequest = (url: string, params: any) => {
+export const postRequest = (url: string, params: any, headers?:any) => {
   return axios({
     method: 'post',
     url: `${url}`,
-    data: params
+    data: params,
+    ...headers
   })
 }
 

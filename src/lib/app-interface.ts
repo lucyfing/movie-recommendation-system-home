@@ -11,6 +11,8 @@ export interface Movie {
     countries: [string], // 电影地区
     actors: [string], // 电影演员
     directors: [string], // 电影导演
+    writers: [string], // 电影编剧
+    dateReleased: string, // 电影上映时间
     meta: {
         createdAt: Date,
         updatedAt: Date
@@ -21,4 +23,13 @@ export interface Category {
     _id: string,
     name: string,
     movies?: string[]
+}
+
+export interface User {
+    username?: string,
+    email?: string,
+    password?: string
+    avatar?: string,
+    _id?: string,
+    description?: string
 }

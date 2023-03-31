@@ -1,14 +1,14 @@
 import React, { createContext, lazy, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Affix, Avatar, Menu, MenuProps, Modal, Tabs, TabsProps, Input } from 'antd';
+import { Affix, Avatar, Menu, MenuProps, Modal, Tabs, TabsProps, Input, Popover, Button } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import './index.less';
 import '../assets/index.less'
-import categoryApi from '../request/category'
-import movieApi from '../request/movie';
+import categoryApi from '../api/category'
+import movieApi from '../api/movie';
 import lazyComponent from '../components/lazyComponent';
-import category from '../request/category';
-import { Category, Movie } from '../lib/app-type';
+import category from '../api/category';
+import { Category, Movie, User } from '../lib/app-interface';
 const Login = lazy(() => import('../components/login'))
 const Register = lazy(() => import('../components/register'))
 
@@ -22,13 +22,13 @@ export default function DefaultLayout(
     const [menuItems, setMenuItems] = useState<MenuProps['items']>()
     // 电影列表
     const [movies, setMovies] = useState<Array<Movie>>([])
-    const getMovies = async (type:string='') => {
-        const moviesList = await movieApi.getAllMovies(`/movies/?type=${type}`)
+    const getMovies = async (type?:string) => {
+        const moviesList = await movieApi.getAllMovies(type)
         setMovies(moviesList)
     }
     useEffect(() => {
         const getCategories = async () => {
-            const categories = await categoryApi.getAllCategory('/category/')
+            const categories = await categoryApi.getAllCategory()
             setMenuItems(()=>categories.map((category: Category)=>({
                 label: category.name,
                 key: category.name
@@ -38,34 +38,42 @@ export default function DefaultLayout(
         getMovies()
     }, [])
 
-    const [current, setCurrent] = useState('/')
+    const [current, setCurrent] = useState('')
     const navigate = useNavigate()
     const onClickMenuItems: MenuProps['onClick'] = async (e) => {
         getMovies(e.key)
         setCurrent(e.key)
         navigate(`/channel/${e.key}`)
-        // localStorage.setItem('type', JSON.stringify(e.key))
     };
     const onClickTitle = () => {
         getMovies()
-        setCurrent('/')
+        setCurrent('')
         navigate('/')
     };
     // 监听url的channel是否合法
     const location = useLocation()
-    useEffect(()=>{
+    const rightPath = (path: string) => {
         const categoryList: any = menuItems ? menuItems.map((item)=>item?.key) : []
-        const path = decodeURI(location.pathname)
-        if(!categoryList.includes(path.slice(path.lastIndexOf('/')+1)) && path.includes('channel')) navigate('/')
+        path = decodeURI(path)
+        if(!categoryList.includes(path.slice(path.lastIndexOf('/')+1)) && path.includes('channel')) return false
+        if(path.includes('user') && (!!!document.cookie || document.cookie.split(';')[0] !== 'authentication=1')) {
+            localStorage.removeItem('user') 
+            return false
+        }
+        return true
+    }
+    useEffect(()=>{
+        if(!rightPath(location.pathname)) navigate('/')
     }, [menuItems, location.pathname])
 
+    const [user, setUser] = useState<User>({})
     // 登录注册tab选项
     const [isModalOpen, setIsModalOpen] = useState(false);
     const tagItems: TabsProps['items'] = [
         {
         key: 'login',
         label: `登录`,
-        children: lazyComponent(<Login/>),
+        children: lazyComponent(<Login setIsModalOpen={setIsModalOpen} setUser={setUser}/>),
         },
         {
         key: 'register',
@@ -76,6 +84,36 @@ export default function DefaultLayout(
 
     // 搜索   
     const onSearch = (value: string) => console.log(value);
+
+    const [loginOutopen, setLoginOutOpen] = useState(false);
+    // 点击头像
+    const clickavatar = () => {
+        if(!!localStorage.getItem('user')) setLoginOutOpen(true)
+        else setIsModalOpen(true)
+    }
+    const loginOut = () => {
+        localStorage.removeItem('user')
+        setLoginOutOpen(false)
+        navigate('/')
+    }
+    const goCenter = () => {
+        navigate('/user')
+        setLoginOutOpen(false)
+    }
+    const avatarContent = () => (
+        <>
+            <Button
+              type='text'
+              style={{width:'100%'}}
+              onClick={goCenter}
+            >个人中心</Button>
+            <Button 
+              type='text'
+              style={{width:'100%'}}
+              onClick={loginOut}
+            >退出</Button>
+        </>
+    )
 
     return (
     <div className='app-layout'>
@@ -92,8 +130,15 @@ export default function DefaultLayout(
                         <Search placeholder="请输入电影名" onSearch={onSearch} enterButton size='large' className='search-btn'/>
                     </div>
                     <div className='header-user'>
-                        <Avatar icon={<UserOutlined  className='header-user-avatar'/>} onClick={()=>setIsModalOpen(true)}/>
+                        <Avatar icon={Object.keys(user).length>0?user.avatar:<UserOutlined  className='header-user-avatar'/>} onClick={clickavatar}/>
                     </div>
+                    <Popover
+                        trigger="click"
+                        open={loginOutopen}
+                        onOpenChange={()=>setLoginOutOpen(false)}
+                        content={avatarContent}
+                    >
+                    </Popover>
                 </div>
             </Affix>
            <Context.Provider value={current}>
