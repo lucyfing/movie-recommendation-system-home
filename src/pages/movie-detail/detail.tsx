@@ -1,9 +1,11 @@
-import { Button, Tabs, TabsProps } from 'antd'
-import { HeartOutlined } from '@ant-design/icons'
+import { Button, message, Tabs, TabsProps } from 'antd'
+import { HeartOutlined, StarOutlined } from '@ant-design/icons'
 import React, { lazy, useCallback, useEffect, useState } from 'react'
 import {useLocation, useNavigate, useSearchParams} from 'react-router-dom'
 import './index.less'
 import { Movie } from '../../lib/app-interface'
+import movieApi from '../../api/movie'
+import userApi from '../../api/user'
 
 const MovieCard = lazy(()=>import('../../components/movie-card'))
 
@@ -62,6 +64,22 @@ export default function detail() {
     navigate(`/channel/${type}`)
   }
 
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')!))
+  const [votes, setVotes] = useState(0)
+  const updateCollection = async (doubanId: string, _id?:string, add?: number) => {
+    const params = {
+      _id: _id || '',
+      doubanId: doubanId,
+      collection: add || 0
+    }
+    const {collection, collectionVotes} = await userApi.collectionMovie(params)
+    setVotes(collectionVotes)
+    setChooseColletion(collection)
+  }
+  useEffect(()=>{
+    updateCollection(movieDetail.doubanId, user._id)
+  }, [])
+
   const movies: Array<Object> = [
     {
       poster:'https://img2.doubanio.com/view/photo/s_ratio_poster/public/p1675053073.webp',
@@ -101,15 +119,28 @@ export default function detail() {
   ]
 
   const [chooseColletion, setChooseColletion] = useState(false)
+  // 点击收藏
+  const onCollection = () => {
+    if(!!user) {
+      setChooseColletion(!chooseColletion)
+    } else {
+      message.warning('请先登录')
+    }
+  }
   useEffect(()=>{
     let timer: any = null
-    timer = setTimeout(() => {
-      console.log('发送收藏数据')
+    timer = setTimeout(async() => {
+      let collection = 0
+      if(chooseColletion) collection = 1
+      if(!chooseColletion) collection = -1
+      await updateCollection(movieDetail.doubanId, user._id, collection)
     }, 1000)
     return () => {
       clearTimeout(timer)
     }
   }, [chooseColletion])
+
+
   return (
     <div className='detail-movie'>
       <div className='detail-movie-video'>
@@ -124,10 +155,11 @@ export default function detail() {
           <div className='video-choose'>
             <Button
               type='link'
-              icon={<HeartOutlined />}
+              icon={<StarOutlined />}
               className={chooseColletion?'is-choose': 'not-choose'}
-              onClick={()=>setChooseColletion(!chooseColletion)}
+              onClick={onCollection}
             ></Button>
+            <span>{votes}</span>
           </div>
         </div>
         <div className='detail-movie-introduce'>

@@ -1,6 +1,7 @@
-import { getRequest } from "./axios"
+import { getRequest, postRequest } from "./axios"
 import { Movie } from '../lib/app-interface' 
 import { message } from "antd"
+import { type } from "os"
 
 const getAllMovies = async (type?: string, year?:number) => {
     let moviesList: Array<Movie> = []

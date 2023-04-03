@@ -35,10 +35,32 @@ const updatePwd = async (params: any) => {
     }
 }
 
+// 收藏电影
+const collectionMovie = async (params: any) => {
+    const result = {
+        collection: false,
+        collectionVotes: 0
+    }
+    try {
+        const resp = await postRequest('/api/user/userMovie', params)
+        result.collection = resp.data.collectionUser
+        result.collectionVotes = resp.data.collectionVotes
+    } catch (error) {
+        message.error(error as any)
+    }
+    return result
+}
+
+// 获取用户收藏电影列表
+const getCollectionList = async () => {
+    
+}
+
 
 export default {
     homeLogin,
     updateUser,
     updateAvatar,
-    updatePwd
+    updatePwd,
+    collectionMovie
 }
