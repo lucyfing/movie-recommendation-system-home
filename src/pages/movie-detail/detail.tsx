@@ -33,10 +33,12 @@ export function Introduce(
         <p>类型：{props.movieDetail.movieTypes.join('/')}</p>
         <p>制片地区/国家：{props.movieDetail.countries.join('/')}</p>
         <p>语言：{props.movieDetail.languages.join('/')}</p>
+        <p>上映时间：{props.movieDetail.dateReleased}</p>
       </div>
       <div>
         <h3>演职人员</h3>
         <p>导演：{props.movieDetail.directors.join('/')}</p>
+        <p>编剧：{props.movieDetail.writers.join('/')}</p>
         <p>主演：{props.movieDetail.actors.join('/')}</p>
       </div>
     </div>

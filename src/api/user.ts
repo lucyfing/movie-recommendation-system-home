@@ -1,6 +1,6 @@
 import { message } from "antd"
 import { realpath } from "fs"
-import { User } from "../lib/app-interface"
+import { Movie, User } from "../lib/app-interface"
 import { getRequest, postRequest } from "./axios"
 import utils from "./utils"
 
@@ -52,8 +52,13 @@ const collectionMovie = async (params: any) => {
 }
 
 // 获取用户收藏电影列表
-const getCollectionList = async () => {
-    
+const getCollectionList = async (params: any) => {
+    const resp = await postRequest('/api/user/myCollections', params)
+    const list = resp.data.list.map((movie:Movie)=>utils.getMovieDetail(movie))
+    return {
+        ...resp.data,
+        list
+    }
 }
 
 
@@ -62,5 +67,6 @@ export default {
     updateUser,
     updateAvatar,
     updatePwd,
-    collectionMovie
+    collectionMovie,
+    getCollectionList
 }
