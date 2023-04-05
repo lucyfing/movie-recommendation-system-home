@@ -4,6 +4,7 @@ import lazyComponent from '../components/lazyComponent'
 import authRoute from '../components/authRoute'
 const Home = lazy(() => import('../pages/movie-home'))
 const Detail = lazy(() => import('../pages/movie-detail/detail.tsx'))
+const Search = lazy(() => import('../pages/movie-search'))
 const User = lazy(() => import('../pages/user'))
 const UserInformation = lazy(() => import('../pages/user-information'))
 const AccountSetting = lazy(() => import('../pages/account-setting'))
@@ -24,6 +25,11 @@ export default [
         path: '/detail/:id',
         name: '详情页',
         element: lazyComponent(<Detail/>)
+    },
+    {
+        path: '/search',
+        name: '搜索',
+        element: lazyComponent(<Search/>)
     },
     {
         path: '/user',

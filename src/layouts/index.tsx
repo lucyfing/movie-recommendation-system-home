@@ -7,13 +7,14 @@ import '../assets/index.less'
 import categoryApi from '../api/category'
 import movieApi from '../api/movie';
 import lazyComponent from '../components/lazyComponent';
-import category from '../api/category';
 import { Category, Movie, User } from '../lib/app-interface';
+import { useSelector, useDispatch } from 'react-redux'
+import { store } from '../redux/index'
 const Login = lazy(() => import('../components/login'))
 const Register = lazy(() => import('../components/register'))
 
 const { Search } = Input
-export const Context = createContext<string>('')
+export const Context = createContext<any>({})
 
 export default function DefaultLayout(
     props: {element: React.ReactElement<any, string | React.JSXElementConstructor<any>> | null}
@@ -21,11 +22,7 @@ export default function DefaultLayout(
     // 导航栏
     const [menuItems, setMenuItems] = useState<MenuProps['items']>()
     // 电影列表
-    const [movies, setMovies] = useState<Array<Movie>>([])
-    const getMovies = async (type?:string) => {
-        const moviesList = await movieApi.getAllMovies(type)
-        setMovies(moviesList)
-    }
+    const [movieList, setMovieList] = useState<Array<Movie>>([])
     useEffect(() => {
         const getCategories = async () => {
             const categories = await categoryApi.getAllCategory()
@@ -35,19 +32,16 @@ export default function DefaultLayout(
             })))
         }
         getCategories()
-        getMovies()
     }, [])
 
-    const [current, setCurrent] = useState('')
+    const [currentType, setCurrentType] = useState('')
     const navigate = useNavigate()
     const onClickMenuItems: MenuProps['onClick'] = async (e) => {
-        getMovies(e.key)
-        setCurrent(e.key)
+        setCurrentType(e.key)
         navigate(`/channel/${e.key}`)
     };
     const onClickTitle = () => {
-        getMovies()
-        setCurrent('')
+        setCurrentType('')
         navigate('/')
     };
     // 监听url的channel是否合法
@@ -66,14 +60,13 @@ export default function DefaultLayout(
         if(!rightPath(location.pathname)) navigate('/')
     }, [menuItems, location.pathname])
 
-    const [user, setUser] = useState<User>({})
     // 登录注册tab选项
     const [isModalOpen, setIsModalOpen] = useState(false);
     const tagItems: TabsProps['items'] = [
         {
         key: 'login',
         label: `登录`,
-        children: lazyComponent(<Login setIsModalOpen={setIsModalOpen} setUser={setUser}/>),
+        children: lazyComponent(<Login setIsModalOpen={setIsModalOpen}/>),
         },
         {
         key: 'register',
@@ -83,7 +76,12 @@ export default function DefaultLayout(
     ];
 
     // 搜索   
-    const onSearch = (value: string) => console.log(value);
+    const onSearch = async(value: string) => {
+        const movies = await movieApi.getFilterMovies(value)
+        setCurrentType('')
+        setMovieList(movies)
+        navigate('/search')
+    };
 
     const [loginOutopen, setLoginOutOpen] = useState(false);
     // 点击头像
@@ -95,6 +93,7 @@ export default function DefaultLayout(
         localStorage.removeItem('user')
         setLoginOutOpen(false)
         navigate('/')
+        window.location.reload()
     }
     const goCenter = () => {
         navigate('/user')
@@ -115,6 +114,9 @@ export default function DefaultLayout(
         </>
     )
 
+    // 获取user
+    const currentUser: User = store.getState().user
+
     return (
     <div className='app-layout'>
         <div className='app-container'>
@@ -124,13 +126,13 @@ export default function DefaultLayout(
                         <h2 className='title' onClick={onClickTitle}>电影推荐系统</h2>
                     </div>
                     <div className='header-navigate'>
-                        <Menu onClick={onClickMenuItems} selectedKeys={[current]} mode="horizontal" items={menuItems} className="header-navigate-menu"/>
+                        <Menu onClick={onClickMenuItems} selectedKeys={[currentType]} mode="horizontal" items={menuItems} className="header-navigate-menu"/>
                     </div>
                     <div className='header-search'>
                         <Search placeholder="请输入电影名" onSearch={onSearch} enterButton size='large' className='search-btn'/>
                     </div>
                     <div className='header-user'>
-                        <Avatar icon={Object.keys(user).length>0?user.avatar:<UserOutlined  className='header-user-avatar'/>} onClick={clickavatar}/>
+                        <Avatar src={currentUser.avatar||null} onClick={clickavatar}/>
                     </div>
                     <Popover
                         trigger="click"
@@ -141,7 +143,7 @@ export default function DefaultLayout(
                     </Popover>
                 </div>
             </Affix>
-           <Context.Provider value={current}>
+           <Context.Provider value={{currentType, movieList}}>
                 <div className='app-container-main'>
                     {props.element}
                 </div>
@@ -153,3 +155,4 @@ export default function DefaultLayout(
     </div>
     )
 }
+

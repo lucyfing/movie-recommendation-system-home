@@ -1,19 +1,14 @@
 import React, { lazy, useContext, useEffect, useState } from 'react'
-import { useLocation } from 'react-router-dom';
-import request from '../../utils/request'
-import { Card, Menu } from 'antd'
+import { Empty, Menu } from 'antd'
 import type { MenuProps } from 'antd/es/menu';
 import './index.less'
-import axios from 'axios';
-import { getRequest } from '../../api/axios';
 import movieApi from '../../api/movie'
 import { Movie } from '../../lib/app-interface';
 const MovieCard = lazy(() => import('../../components/movie-card'))
 import { Context } from '../../layouts';
-import { type } from 'os';
 
 export default function Home() {  
-  const type = useContext(Context)
+  const {currentType, movieList} = useContext(Context)
   const [movies, setMovies] = useState<Movie[]>([])
   const [currentYear, setCurrentYear] = useState('-1')
   const getTypeMovies = async (type?: string, year?: number) => {
@@ -21,8 +16,8 @@ export default function Home() {
     setMovies(movieList)
   }
   useEffect(() => {
-    getTypeMovies(type, -1)
-  }, [type])
+    getTypeMovies(currentType, -1)
+  }, [currentType])
   // 获取时间
   const getYears = () => {
     const years: MenuProps['items'] = []
@@ -36,7 +31,7 @@ export default function Home() {
 
   const onClickYears: MenuProps['onClick'] = async (e) => {
     setCurrentYear(e.key)
-    getTypeMovies(type, Number(e.key))
+    getTypeMovies(currentType, Number(e.key))
   }
 
   return (
@@ -51,11 +46,15 @@ export default function Home() {
           selectedKeys={[currentYear]}
         />
       </div>
-      <div className='home-movie-list'>
-        {movies.map((movie:Movie)=>(
-          <MovieCard movie={movie} key={movie.doubanId}/>
-        ))}
-      </div>
+      { movies.length > 0 ?
+        <div className='home-movie-list'>
+          {movies.map((movie:Movie)=>(
+            <MovieCard movie={movie} key={movie.doubanId}/>
+          ))}
+        </div>
+        :
+        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} style={{margin: 'auto',marginTop:'15rem'}}/>
+      }
     </div>
   )
 }

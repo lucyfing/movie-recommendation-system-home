@@ -7,6 +7,8 @@ import utils from '../../utils'
 import { User } from '../../lib/app-interface'
 import userApi from '../../api/user'
 import { postRequest } from '../../api/axios'
+import { store } from '../../redux/index'
+import { setUser as setCurrentUser } from '../../redux/user'
 const { TextArea } = Input
 
 
@@ -35,7 +37,7 @@ export default function index() {
       setUser(newUser)
       setInput(false)
       message.success('修改成功')
-      localStorage.setItem('user', JSON.stringify(newUser))
+      store.dispatch(setCurrentUser(newUser))
     } else {
       if(key==='username') message.error('请输入由5-15位大小写字母及数字构成的用户名')
     }
@@ -75,20 +77,20 @@ export default function index() {
       formData.append('_id', JSON.parse(localStorage.getItem('user')!)._id);
       // 发送 POST 请求，将 FormData 数据传递给后端
       const user = await userApi.updateAvatar(formData)
-      localStorage.setItem('user', JSON.stringify(user))
-      message.success('上传成功');
+      store.dispatch(setCurrentUser(user))
+      message.success('上传成功')
+      window.location.reload()
     } catch (error) {
       message.error('上传失败');
     }
   }
-  const host = 'http://localhost:4455'
 
   return (
     <div className='personal-information app-div-shadow'>
       <div className='personal-card'>
         <div className='title'>头像</div>
         <div className='content'>
-          <Avatar src={host+user.avatar} size={60}/>
+          <Avatar src={user.avatar||null} size={60}/>
         </div>
         <div className='edit'>
           <Upload

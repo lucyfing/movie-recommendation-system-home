@@ -1,8 +1,9 @@
-import { Button, Checkbox, Form, Input } from 'antd'
-import React from 'react'
+import { Button, Checkbox, Form, Input, message } from 'antd'
+import userApi from '../../api/user'
+
 
 export default function Register() {
-
+    const [form] = Form.useForm()
     const usernameRules = [
         {required: true, message: '请输入用户名!', trigger: 'blur'},
         {min: 5, max: 16, message: '长度在 5 到 16 个字符', trigger: 'blur'},
@@ -11,13 +12,30 @@ export default function Register() {
         {required: true, message: '请输入密码', trigger: 'blur'},
         {min: 5, max: 16, message: '长度在 5 到 16 个字符', trigger: 'blur'}
     ]
+    const confirmPasswordRules = [
+        {required: true, message: '请确认密码', trigger: 'blur'},
+        ({getFieldValue}: typeof form) => ({
+            validator(_: any, value: any) {
+              if (!value || getFieldValue('password') === value) {
+                return Promise.resolve();
+              }
+              return Promise.reject('请输入正确的密码');
+            },
+        }),
+    ]
+    const emailRules = [
+        {required: true, type: 'email', message: '请输入合法的邮箱地址!', trigger: 'blur'}
+    ]
 
-    const onFinish = (values: any) => {
-    console.log('Success:', values);
-    };
-    
-    const onFinishFailed = (errorInfo: any) => {
-    console.log('Failed:', errorInfo);
+    const onFinish = async (values: any) => {
+        const params = {
+            username: values.username,
+            password: values.password,
+            email: values.email
+        }
+        const resp = await userApi.createUser(params)
+        if(resp.success) message.success(resp.message)
+        else message.error(resp.message)
     };
 
     return (
@@ -28,7 +46,6 @@ export default function Register() {
             wrapperCol={{ span: 15 }}
             style={{ maxWidth: 450 }}
             onFinish={onFinish}
-            onFinishFailed={onFinishFailed}
             autoComplete="off"
             >
                 <Form.Item
@@ -40,35 +57,28 @@ export default function Register() {
                 </Form.Item>
 
                 <Form.Item
-                label="密码"
-                name="password"
-                rules={passwordRules}
-                >
-                <Input.Password placeholder='请输入5到16个字符'/>
-                </Form.Item>
-
-                <Form.Item
-                label="确认密码"
-                name="confirm_password"
-                rules={passwordRules}
-                >
-                <Input.Password placeholder='请确认密码'/>
-                </Form.Item>
-
-                <Form.Item
                 label="邮箱"
                 name="email"
-                rules={passwordRules}
+                rules={emailRules as any}
                 >
                 <Input placeholder='例: example@123.com'/>
                 </Form.Item>
 
                 <Form.Item
-                label="手机号"
-                name="phone"
+                label="密码"
+                name="password"
                 rules={passwordRules}
                 >
-                <Input placeholder="例: 18955552312"/>
+                <Input.Password placeholder='密码由5到16个a-zA-Z0-9字符组成'/>
+                </Form.Item>
+
+                <Form.Item
+                label="确认密码"
+                name="confirmPassword"
+                dependencies={['password']}
+                rules={confirmPasswordRules as any}
+                >
+                <Input.Password placeholder='请确认密码'/>
                 </Form.Item>
 
                 <Form.Item wrapperCol={{ offset: 6, span: 15 }}>

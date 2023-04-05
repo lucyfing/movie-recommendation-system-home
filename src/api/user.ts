@@ -4,6 +4,7 @@ import { Movie, User } from "../lib/app-interface"
 import { getRequest, postRequest } from "./axios"
 import utils from "./utils"
 
+
 // 登录
 const homeLogin = async (loginForm:{email:string,password:string}) => {
     const user: User = await utils.getUserData('/api/user/login', loginForm)
@@ -61,6 +62,12 @@ const getCollectionList = async (params: any) => {
     }
 }
 
+// 创建新用户
+const createUser = async (params: {username: string, password: string, email: string}) => {
+    const resp = await postRequest('/api/user/createUser', params)
+    return resp.data
+} 
+
 
 export default {
     homeLogin,
@@ -68,5 +75,6 @@ export default {
     updateAvatar,
     updatePwd,
     collectionMovie,
-    getCollectionList
+    getCollectionList,
+    createUser
 }

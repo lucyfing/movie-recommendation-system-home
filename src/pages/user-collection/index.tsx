@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import './index.less'
 import '../../assets/index.less'
 import MovieCard from '../../components/movie-card'
-import { Pagination } from 'antd'
+import { Empty, Pagination } from 'antd'
 import type { PaginationProps } from 'antd'
 import userApi from '../../api/user'
 import { Movie } from '../../lib/app-interface'
@@ -35,16 +35,20 @@ export default function index() {
 
   return (
     <div className='personal-collection app-div-shadow'>
-      <div className='collection-list'>
-        {collectionMovies.map((movie:any)=>(
-          <MovieCard
-            movie={movie} 
-            key={movie.doubanId} 
-            minWidth='7rem' 
-            height='13rem'
-          />
-        ))}
-      </div>
+      { collectionMovies.length > 0 ?
+        <div className='collection-list'>
+          {collectionMovies.map((movie:any)=>(
+            <MovieCard
+              movie={movie} 
+              key={movie.doubanId} 
+              minWidth='7rem' 
+              height='13rem'
+            />
+          ))}
+        </div>
+        :
+        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} style={{margin: 'auto',marginTop:'15rem'}}/>
+      }
       <div className='collection-pagination'>
         <Pagination 
           defaultPageSize={pageSize} 

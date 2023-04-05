@@ -2,6 +2,7 @@ import { Avatar, Menu, MenuProps } from 'antd'
 import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Outlet } from 'react-router-dom'
+import { store } from '../../redux'
 import './index.less'
 import '../../assets/index.less'
 
@@ -24,7 +25,7 @@ export default function index() {
   const onSelect: MenuProps['onSelect'] = (e) => {
     navigator(e.key)
   }
-  const user = JSON.parse(localStorage.getItem('user')!) || {}
+  const user = store.getState().user
   const navigate = useNavigate()
   useEffect(()=>{
     navigate('/user/user-information')

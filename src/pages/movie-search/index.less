@@ -1,0 +1,50 @@
+.search-movies {
+    width: 100%;
+    padding-top: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+
+    .movie-card {
+        width: 80%;
+        height: 15rem;
+        margin-bottom: 2rem;
+        display: flex;
+        flex-wrap: nowrap;
+
+        .movie-poster {
+            width: 10rem;
+            border-radius: 5px;
+            &:hover {
+                transform: scale(1.1);
+                cursor: pointer;
+            }
+        }
+
+        .movie-content {
+            margin-left: 1rem;
+
+            h3,p{
+                margin: 0;
+                margin-bottom: 5px;
+            }
+            .title {
+                color: #0e58ce;
+                &:hover {
+                    cursor: pointer;
+                    text-decoration: underline;
+                }
+            }
+            .actor {
+                height: 4rem;
+                word-break: break-all;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                display: -webkit-box;
+                -webkit-box-orient: vertical;
+                -webkit-line-clamp: 3;  
+            }
+        }
+    }
+}

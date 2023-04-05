@@ -5,8 +5,10 @@ import utils from '../../utils/index'
 import userApi from '../../api/user'
 import { User } from '../../lib/app-interface';
 import { useNavigate } from 'react-router-dom';
+import { store } from '../../redux'
+import { setUser } from '../../redux/user';
 
-export default function Login(props:{setIsModalOpen:any, setUser:any}) {
+export default function Login(props:{setIsModalOpen:any}) {
 
     const usernameRules = [
         {required: true, type: 'email', message: '请输入合法的邮箱地址!', trigger: 'blur'}
@@ -21,9 +23,9 @@ export default function Login(props:{setIsModalOpen:any, setUser:any}) {
         const user: User = await userApi.homeLogin(values)
         if(Object.keys(user).length>0) {
             document.cookie = "authentication=1"
-            localStorage.setItem('user', JSON.stringify(user))
-            props.setUser(user)
             props.setIsModalOpen(false)
+            store.dispatch(setUser(user))
+            window.location.reload()
         }
     };
     
