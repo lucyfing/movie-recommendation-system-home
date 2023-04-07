@@ -1,5 +1,4 @@
-import { futimesSync } from "fs"
-import user from "../api/user"
+
 
 const localStorage_get = (key: string) => {
     if(!!localStorage.getItem(key)) return JSON.parse(localStorage.getItem(key)!)
@@ -46,7 +45,6 @@ const validUsername = (username: string | undefined) => {
 
 // 密码确定
 const comparePassword = async (password: string, confirmPassword: string) => {
-    console.log(password, confirmPassword)
     if(password === confirmPassword) return Promise.resolve(true)
     else return Promise.reject('密码与确认密码不一致')
 }
@@ -90,44 +88,6 @@ const replaceSpecialChar = (keywords: string | undefined) => {
     return str;
   };
 
-// 监听localStorage
-const listenLocalStorage = () => {
-    const localStorageMock = (function(win) {
-        const storage = win.localStorage
-        return {
-            setItem: function(key: string, value: string) {
-                const setItemEvent:any = new Event("setItemEvent")
-                const oldValue = storage[key]
-                setItemEvent.key = value
-                if(oldValue !== value) {
-                    setItemEvent.newValue = value
-                    setItemEvent.oldValue = oldValue
-                    win.dispatchEvent(setItemEvent)
-                    storage[key] = value
-                    return true
-                }
-            },
-            getItem: function(key: string) {
-                return storage[key]
-            },
-            removeItem: function(key: string) {
-                storage.removeItem(key)
-                return true
-            },
-            clear: function() {
-                storage.clear()
-                return true
-            }
-        }
-    })(window)
-
-    Object.defineProperty(window, 'localStorage', {value: localStorageMock, writable: true})
-
-    window.addEventListener('setItemEvent', function(e){
-        console.log(e)
-    })
-}
-
 
 export default {
     localStorage_get,
@@ -140,6 +100,5 @@ export default {
     escapeHtml,
     replaceSpecialChar,
     validCaptcha,
-    comparePassword,
-    listenLocalStorage
+    comparePassword
 }

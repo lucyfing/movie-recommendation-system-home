@@ -17,6 +17,7 @@ export interface Movie {
         createdAt: Date,
         updatedAt: Date
     }
+    collectionVotes?: number
 }
 
 export interface Category {

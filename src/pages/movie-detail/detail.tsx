@@ -10,14 +10,7 @@ import userApi from '../../api/user'
 const MovieCard = lazy(()=>import('../../components/movie-card'))
 
 
-export function Introduce(
-  props: {
-    movieDetail: Movie
-  }
-) {
-  useEffect(()=>{
-    console.log(props.movieDetail.languages)
-  }, [])
+export function Introduce(props: { movieDetail: Movie}) {
   return (
     <div className='introduce-content'>
       <div className='poster'>
@@ -66,7 +59,7 @@ export default function detail() {
     navigate(`/channel/${type}`)
   }
 
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')!))
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')!)||{})
   const [votes, setVotes] = useState(0)
   const updateCollection = async (doubanId: string, _id?:string, add?: number) => {
     const params = {
@@ -78,52 +71,26 @@ export default function detail() {
     setVotes(collectionVotes)
     setChooseColletion(collection)
   }
+  const [movies, setMovies] = useState<Array<Movie>>([])
+  const [movieVideo, setMovieVideo] = useState(movieDetail.video)
   useEffect(()=>{
-    updateCollection(movieDetail.doubanId, user._id)
-  }, [])
-
-  const movies: Array<Object> = [
-    {
-      poster:'https://img2.doubanio.com/view/photo/s_ratio_poster/public/p1675053073.webp',
-      name: '电影名称',
-      description: 'descriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescription',
-      rate: 4.5,
-      doubanId: 123456 
-    },
-    {
-      poster:'https://img2.doubanio.com/view/photo/s_ratio_poster/public/p1675053073.webp',
-      name: '电影名称',
-      description: 'descriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescription',
-      rate: 4.5,
-      doubanId: 182062  
-    },
-    {
-      poster:'https://img2.doubanio.com/view/photo/s_ratio_poster/public/p1675053073.webp',
-      name: '电影名称',
-      description: 'descriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescription',
-      rate: 4.5,
-      doubanId: 456895  
-    },
-    {
-      poster:'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
-      name: '电影名称',
-      description: 'descriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescription',
-      rate: 4.5,
-      doubanId: 856942  
-    },
-    {
-      poster:'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
-      name: '电影名称',
-      description: 'descriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescription',
-      rate: 4.5,
-      doubanId: 987456 
+    const getRecommendMovies = async (doubanId: string, _id?: string) => {
+      const movies = await movieApi.recommendMovies({doubanId, _id})
+      setMovies(movies)
     }
-  ]
+    updateCollection(movieDetail.doubanId, user._id)
+    getRecommendMovies(movieDetail.doubanId, user._id)
+    setMovieDetail(()=>JSON.parse(location.state.movieDetail))
+  }, [location.pathname])
+
+  useEffect(() => {
+    setMovieVideo(()=>movieDetail.video)
+  }, [movieDetail])
 
   const [chooseColletion, setChooseColletion] = useState(false)
   // 点击收藏
   const onCollection = () => {
-    if(!!user) {
+    if(Object.keys(user).length>0) {
       setChooseColletion(!chooseColletion)
     } else {
       message.warning('请先登录')
@@ -151,8 +118,9 @@ export default function detail() {
             className='video'
             controls={true}
             preload="auto"
+            key={movieVideo}
           >
-            <source src={movieDetail?.video} type="video/mp4" />
+            <source src={movieVideo} type="video/mp4" />
           </video>
           <div className='video-choose'>
             <Button

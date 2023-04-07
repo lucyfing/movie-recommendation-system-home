@@ -29,7 +29,15 @@ const getFilterMovies = async (name: string) => {
 }
 
 
+const recommendMovies = async (params: {doubanId: string, _id?: string}) => {
+    const resp = await postRequest('/api/movies/recommendMovies', params)
+    const movies = resp.data.movies.map((movie: Movie) => utils.getMovieDetail(movie))
+    return movies
+}
+
+
 export default {
     getAllMovies,
-    getFilterMovies
+    getFilterMovies,
+    recommendMovies
 }

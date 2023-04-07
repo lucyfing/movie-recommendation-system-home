@@ -18,7 +18,6 @@ export default function index(props:{
             const type = types[types.length-1]
             localStorage.setItem('type', type)
         }
-        // console.log(movie)
         navigate(`/detail/${movie.doubanId}`, {
             state: {
                 movieDetail: JSON.stringify(movie)

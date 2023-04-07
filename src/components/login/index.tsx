@@ -18,7 +18,6 @@ export default function Login(props:{setIsModalOpen:any}) {
         {min: 5, max: 16, message: '长度在 5 到 16 个字符', trigger: 'blur'}
     ]
 
-    const navigate = useNavigate()
     const onFinish = async (values: any) => {
         const user: User = await userApi.homeLogin(values)
         if(Object.keys(user).length>0) {
@@ -29,9 +28,6 @@ export default function Login(props:{setIsModalOpen:any}) {
         }
     };
     
-    const onFinishFailed = (errorInfo: any) => {
-    console.log('Failed:', errorInfo)
-    };
 
     return (
         <div>
@@ -41,7 +37,6 @@ export default function Login(props:{setIsModalOpen:any}) {
             wrapperCol={{ span: 15 }}
             style={{ maxWidth: 450 }}
             onFinish={onFinish}
-            onFinishFailed={onFinishFailed}
             autoComplete="off"
             >
                 <Form.Item
