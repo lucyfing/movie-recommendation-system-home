@@ -42,13 +42,6 @@ export default function detail() {
   // 电影详细信息
   const location = useLocation()
   const [movieDetail, setMovieDetail] = useState<Movie>(()=>JSON.parse(location.state.movieDetail))
-  const tagItems: TabsProps['items'] = [
-    {
-    key: 'introduce',
-    label: `简介`,
-    children: <Introduce movieDetail={movieDetail}/>,
-    }
-  ];
 
   const navigate = useNavigate()
   const goBack = () => {
@@ -79,8 +72,8 @@ export default function detail() {
       setMovies(movies)
     }
     updateCollection(movieDetail.doubanId, user._id)
-    getRecommendMovies(movieDetail.doubanId, user._id)
     setMovieDetail(()=>JSON.parse(location.state.movieDetail))
+    getRecommendMovies(movieDetail.doubanId, user._id)
   }, [location.pathname])
 
   useEffect(() => {
@@ -141,7 +134,13 @@ export default function detail() {
           >回到首页</Button>
           <Tabs
             defaultActiveKey="introduce" 
-            items={tagItems} 
+            items={[
+              {
+              key: 'introduce',
+              label: `简介`,
+              children: <Introduce movieDetail={movieDetail}/>,
+              }
+            ]} 
             centered 
             destroyInactiveTabPane
           />

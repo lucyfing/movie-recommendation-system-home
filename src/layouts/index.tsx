@@ -26,10 +26,13 @@ export default function DefaultLayout(
     useEffect(() => {
         const getCategories = async () => {
             const categories = await categoryApi.getAllCategory()
-            setMenuItems(()=>categories.map((category: Category)=>({
-                label: category.name,
-                key: category.name
-            })))
+            setMenuItems(()=>([
+                {label: '个性化推荐', key: '/recommend'},
+                ...categories.map((category: Category)=>({
+                    label: category.name,
+                    key: category.name
+                }))
+            ]))
         }
         getCategories()
     }, [])
@@ -38,7 +41,8 @@ export default function DefaultLayout(
     const navigate = useNavigate()
     const onClickMenuItems: MenuProps['onClick'] = async (e) => {
         setCurrentType(e.key)
-        navigate(`/channel/${e.key}`)
+        if(e.key!=='/recommend') navigate(`/channel/${e.key}`)
+        else navigate(e.key)
     };
     const onClickTitle = () => {
         setCurrentType('')

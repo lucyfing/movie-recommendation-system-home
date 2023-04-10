@@ -5,6 +5,7 @@ import authRoute from '../components/authRoute'
 const Home = lazy(() => import('../pages/movie-home'))
 const Detail = lazy(() => import('../pages/movie-detail/detail.tsx'))
 const Search = lazy(() => import('../pages/movie-search'))
+const Recommend = lazy(() => import('../pages/movie-recommend'))
 const User = lazy(() => import('../pages/user'))
 const UserInformation = lazy(() => import('../pages/user-information'))
 const AccountSetting = lazy(() => import('../pages/account-setting'))
@@ -20,6 +21,11 @@ export default [
         path: '/channel/:id',
         name: '首页',
         element: lazyComponent(<Home/>),
+    },
+    {
+        path: '/recommend',
+        name: '电影推荐',
+        element: lazyComponent(<Recommend/>)
     },
     {
         path: '/detail/:id',
